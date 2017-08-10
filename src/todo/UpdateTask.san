@@ -1,0 +1,216 @@
+<template>
+    <div class="add">
+        <div class="hd-add">
+            <div class="hd">Title</div>
+            <button class="btn btn-default btn-cancel" id="all-c" on-click="cancel">Cancel</button>
+            <button class="btn btn-default btn-add" id="all-d" on-click="submit">Done</button>
+        </div>
+        <div class="pri">
+            <div class='pri-tag {{pri1 ? "choose" : ""}}' on-click="updatepri1"><span class="glyphicon glyphicon-exclamation-sign red-p"></span>高优</div>
+            <div class='pri-tag {{pri2 ? "choose" : ""}}' on-click="updatepri2"><span class="glyphicon glyphicon-exclamation-sign yellow-p"></span>中优</div>
+            <div class='pri-tag {{pri3 ? "choose" : ""}}' on-click="updatepri3"><span class="glyphicon glyphicon-exclamation-sign green-p"></span>低优</div>
+        </div>
+        <div class="sta">
+            <div class='sta-tag {{sta1 ? "choose" : ""}}' on-click="updatesta1"><span class="glyphicon glyphicon-play state"></span>进行中</div>
+            <div class='sta-tag {{sta2 ? "choose" : ""}}' on-click="updatesta2"><span class="glyphicon glyphicon-pause state"></span>待办</div>
+            <div class='sta-tag {{sta3 ? "choose" : ""}}' on-click="updatesta3"><span class="glyphicon glyphicon-stop state"></span>已完成</div>
+        </div>
+        <div class="task">
+            <textarea class="content" id='content' value="{= todo.title =}"></textarea>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import service from '../service'
+
+import san from 'san'
+
+export default {
+
+    created: function () {
+		
+        var id = this.data.get('route.query.id');
+        if (id) {
+            this.data.set('id', +id);
+            this.setTodo(service.todo(id));
+        }
+        var todo = this.data.get('todo');
+        if(todo.pri == 'red') {
+               this.data.set('pri1',true);
+            }
+            else if(todo.pri == 'yellow') {
+                this.data.set('pri2',true);
+            }
+            else {
+                this.data.set('pri3',true);
+            }
+            if(todo.sta == 'glyphicon-play') {
+               this.data.set('sta1',true);
+            }
+            else if(todo.sta == 'glyphicon-pause') {
+               this.data.set('sta2',true);
+            }
+            else {
+                this.data.set('sta3',true);
+            }
+		
+    },
+
+    setTodo: function (todo) {
+        this.data.set('todo', todo);
+    },
+	updatepri1: function () {
+		var flag = this.data.get('pri1');
+		this.data.set('pri1',!flag);
+		this.data.set('pri2',false);
+		this.data.set('pri3',false);
+	},
+	updatepri2: function () {
+		var flag = this.data.get('pri2');
+		this.data.set('pri1',false);
+		this.data.set('pri2',!flag);
+		this.data.set('pri3',false);
+	},
+	updatepri3: function () {
+		var flag = this.data.get('pri3');
+		this.data.set('pri1',false);
+		this.data.set('pri2',false);
+		this.data.set('pri3',!flag);
+	},
+	updatesta1: function () {
+		var flag = this.data.get('sta1');
+		this.data.set('sta1',!flag);
+		this.data.set('sta2',false);
+		this.data.set('sta3',false);
+	},
+	updatesta2: function () {
+		var flag = this.data.get('sta2');
+		this.data.set('sta1',false);
+		this.data.set('sta2',!flag);
+		this.data.set('sta3',false);
+	},
+	updatesta3: function () {
+		var flag = this.data.get('sta3');
+		this.data.set('sta1',false);
+		this.data.set('sta2',false);
+		this.data.set('sta3',!flag);
+	},
+	
+    
+
+    submit: function () {
+    	var todo = this.data.get('todo');
+    	var id = this.data.get('id');
+    	var pri1 = this.data.get('pri1');
+		var pri2 = this.data.get('pri2');
+		var pri3 = this.data.get('pri3');
+		if(pri1||pri2||pri3) {
+            if(pri1) {todo.pri='red'};
+            if(pri2) {todo.pri='yellow'};
+            if(pri3) {todo.pri='green'};
+        }
+        else{
+            alert('请选择优先级');
+        };
+        var sta1 = this.data.get('sta1');
+		var sta2 = this.data.get('sta2');
+		var sta3 = this.data.get('sta3');
+        if(sta1||sta2||sta3) {
+            if(sta1) {todo.sta='glyphicon-play'};
+            if(sta2) {todo.sta='glyphicon-pause'};
+            if(sta3) {todo.sta='glyphicon-stop'};
+        }
+        else{
+            alert('请选择状态');
+        };
+        
+        service.editTodo(todo,id);
+        history.go(-1);
+    },
+
+    cancel: function () {
+        history.go(-1);
+    }
+}
+
+</script>
+
+<style lang="less">
+    @color: #D9D9D9;
+    @mp: 10px;
+    * {
+        margin: 0;
+        padding: 0;
+        font-size: 62.5%;
+        font-family: "microsoft yahei";
+    }
+    
+    .bg(@width: 100%, @height: 50px) {
+        background: @color;
+        width: @width;
+        height: @height;
+    }
+    
+    .hd {
+        position: relative;
+        font-size: 2.8rem;
+        text-align: center;
+        line-height: 50px;
+        margin-bottom: @mp;
+        .bg;
+    }
+    
+    .btn-add {
+        position: absolute;
+        top: @mp;
+        right: 20px;
+    }
+    
+    .btn-cancel {
+        position: absolute;
+        top: @mp;
+        left: 20px;
+    }
+    
+    .pri,
+    .sta {
+        display: flex;
+        .pri-tag,
+        .sta-tag {
+            margin: 5px;
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #C6C6C6;
+            font-size: 1.6rem;
+            text-align: center;
+            .red-p,
+            .yellow-p,
+            .green-p {
+                font-size: 1.8rem;
+            }
+            .red-p {
+                color: #CF031F;
+            }
+            .yellow-p {
+                color: #F7E739;
+            }
+            .green-p {
+                color: #41750C;
+            }
+            .state {
+                font-size: 1.8rem;
+                color: #D9D9D9;
+            }
+        }
+        .choose {
+            border: 1px solid #FF0000;
+        }
+    }
+    
+    #content {
+        width: 100%;
+        border: none;
+    }
+</style>

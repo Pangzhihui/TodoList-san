@@ -1,0 +1,127 @@
+<template>
+<div class="wrapper">
+	 <div class="hd-one">
+        <div class="hd">Title</div>
+        <router-link to="/add" class="btn btn-default btn-add" id="one-a">Add</router-link>
+    </div>
+    <p class="tips">Now! The One Thing is </p>
+    <div class="list1">
+        <p s-if="!todos.length"><strong>还没有任何任务</strong></p>
+        <div class="task" s-for="todo in todos">
+            <span class="glyphicon glyphicon-play red"></span>
+            <div class="content">
+                {{todo.title}}
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="btn-l active"><router-link to="/one"> One Thing </router-link></div>
+        <div class="btn-r"><router-link to="/">All</router-link></div>
+    </div>
+</div>
+</template>
+
+<script>
+
+import service from '../service'
+import { Link } from 'san-router'
+
+
+export default {
+    components: {
+        'router-link': Link
+    },
+    created: function () {
+		var todos = service.todoOne();
+	    this.data.set('todos', todos);
+		
+    },
+    
+}
+</script>
+
+<style lang="less">
+@color: #D9D9D9;
+    @mp: 10px;
+    .tips {
+        font-size: 3rem;
+        padding-left: @mp;
+    }
+    
+    .list1 {
+        font-size: 1.8rem;
+    }
+    .bg(@width:100%,@height:50px) {
+        background: @color;
+        width:@width;
+        height:@height;
+    }
+    .hd {
+        position: relative;
+        font-size: 2.8rem;
+        text-align: center;
+        line-height: 50px;
+        margin-bottom: @mp;
+        .bg;
+    }
+    .btn-add {
+        position: absolute;
+        top: @mp;
+        right: 20px;
+    }
+    .footer {
+        .bg;
+        position: fixed;
+        bottom: 0px;
+        margin-top: 60px;
+        display: flex;
+        .btn-l,.btn-r {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            a {
+                color: #000000;
+                text-decoration: none;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            
+        }
+        .active {
+            background: #ADADAD;
+        }
+    }
+    
+    .task {
+        border: 1px solid #C6C6C6;
+        display: flex;
+        align-items: center;
+        width: 95%;
+        height: 97px;
+        padding: @mp;
+        margin: @mp auto;
+        position: relative;
+        overflow: hidden;
+        .red,
+        .yellow,
+        .green {
+            font-size: 1.8rem;
+            margin-right: @mp;
+        }
+        .red {
+            color: #CF031F;
+        }
+        .yellow {
+            color: #F7E739;
+        }
+        .green {
+            color: #41750C;
+        }
+        .content {
+            font-size: 1.8rem;
+            width:80%;
+        }
+    }
+
+</style>

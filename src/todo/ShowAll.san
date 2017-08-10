@@ -1,0 +1,299 @@
+<template>
+<div class="wrapper">
+        <div class="hd-one">
+            <div class="hd">Title</div>
+            <router-link to="/add" class="btn btn-default btn-add" id="one-a">Add</router-link>
+        </div>
+        <div class="all">
+		    <div class="pri">
+	            <div class='pri-tag {{pri1 ? "choose" : ""}}' on-click="updatepri1"><span class="glyphicon glyphicon-exclamation-sign red-p"></span>高优</div>
+	            <div class='pri-tag {{pri2 ? "choose" : ""}}' on-click="updatepri2"><span class="glyphicon glyphicon-exclamation-sign yellow-p"></span>中优</div>
+	            <div class='pri-tag {{pri3 ? "choose" : ""}}' on-click="updatepri3"><span class="glyphicon glyphicon-exclamation-sign green-p"></span>低优</div>
+	        </div>
+	        <div class="sta">
+	            <div class='sta-tag {{sta1 ? "choose" : ""}}' on-click="updatesta1"><span class="glyphicon glyphicon-play state"></span>进行中</div>
+	            <div class='sta-tag {{sta2 ? "choose" : ""}}' on-click="updatesta2"><span class="glyphicon glyphicon-pause state"></span>待办</div>
+	            <div class='sta-tag {{sta3 ? "choose" : ""}}' on-click="updatesta3"><span class="glyphicon glyphicon-stop state"></span>已完成</div>
+	        </div>
+		    <div class="list">
+		       
+		        <div class="task" san-for="item, index in tasks">
+		            <span class="glyphicon {{item.pri}} {{item.sta}}"></span>
+		            <div class="content">
+		             	{{item.title}}
+		            </div>
+		            <div class="option">
+		                <router-link to="/edit/{{index}}"> <span class="glyphicon glyphicon-pencil red"></span></router-link>
+		                <span class="glyphicon glyphicon-trash yellow" on-click="rmTodo(index)"><span>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+        <div class="footer">
+            <div class="btn-l"><router-link to="/one"> One Thing </router-link></div>
+            <div class="btn-r active"><router-link to="/">All</router-link></div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import service from '../service'
+import { Link } from 'san-router'
+
+
+export default {
+    components: {
+        'router-link': Link
+    },
+    created: function () {
+    	this.data.set('pri1',false);
+		this.data.set('pri2',false);
+		this.data.set('pri3',false);
+		this.data.set('sta1',false);
+		this.data.set('sta2',false);
+		this.data.set('sta3',false);
+		var todos = service.todos(+(0));
+	    this.data.set('todos', todos);
+		
+    },
+    computed: {
+    	tasks: function() {
+    		var options = [];
+	        var pri1 = this.data.get('pri1');
+	        if(pri1) {
+	        	options.push('red');
+	        }
+			var pri2 = this.data.get('pri2');
+	        if(pri2) {
+	        	options.push('yellow');
+	        }
+			var pri3 = this.data.get('pri3');
+	        if(pri3) {
+	        	options.push('green');
+	        }
+			var sta1 = this.data.get('sta1');
+	        if(sta1) {
+	        	options.push('glyphicon-play');
+	        }
+			var sta2 = this.data.get('sta2');
+	        if(sta2) {
+	        	options.push('glyphicon-pause');
+	        }
+			var sta3 = this.data.get('sta3');
+	        if(sta3) {
+	        	options.push('glyphicon-stop');
+	        }
+	        if(pri1 && pri2 && pri3 && sta1 && sta2 && sta3) {
+
+                return this.data.get('todos');
+            } 
+            else if(!(pri1 ||pri2 ||pri3 || sta1 || sta2 || sta3)) {
+                 return this.data.get('todos')
+            }
+            else {
+            	var todos = service.todos(options);
+	        	return todos;
+            }
+	    	
+        
+    	}
+        
+    },
+	updatepri1: function () {
+		var flag = this.data.get('pri1');
+		this.data.set('pri1',!flag);
+	},
+	updatepri2: function () {
+		var flag = this.data.get('pri2');
+		this.data.set('pri2',!flag);
+	},
+	updatepri3: function () {
+		var flag = this.data.get('pri3');
+		this.data.set('pri3',!flag);
+	},
+	updatesta1: function () {
+		var flag = this.data.get('sta1');
+		this.data.set('sta1',!flag);
+	},
+	updatesta2: function () {
+		var flag = this.data.get('sta2');
+		this.data.set('sta2',!flag);
+	},
+	updatesta3: function () {
+		var flag = this.data.get('sta3');
+		this.data.set('sta3',!flag);
+	},
+
+    rmTodo: function (index) {
+        service.rmTodo(index);
+        this.data.removeAt('todos', index);
+    }
+}
+</script>
+
+<style lang="less">
+@color: #D9D9D9;
+    @mp: 10px;
+    
+    .bg(@width:100%,@height:50px) {
+        background: @color;
+        width:@width;
+        height:@height;
+    }
+    .hd {
+        position: relative;
+        font-size: 2.8rem;
+        text-align: center;
+        line-height: 50px;
+        margin-bottom: @mp;
+        .bg;
+    }
+    .btn-add {
+        position: absolute;
+        top: @mp;
+        right: 20px;
+    }
+    .footer {
+        .bg;
+        position: fixed;
+        bottom: 0px;
+        margin-top: 60px;
+        display: flex;
+        .btn-l,.btn-r {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            a {
+                color: #000000;
+                text-decoration: none;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            
+        }
+        .active {
+            background: #ADADAD;
+        }
+    }
+    .pri {
+        background: #FEEBEB;
+        margin-top: -10px;
+    }
+    
+    .sta {
+        background: #EDFEEC;
+    }
+    
+    .pri,
+    .sta {
+        display: flex;
+        .pri-tag,
+        .sta-tag {
+            border: none;
+            margin: 5px;
+            flex: 1;
+            padding: 5px;
+            font-size: 1.6rem;
+            text-align: center;
+            .red-p,
+            .yellow-p,
+            .green-p {
+                font-size: 1.8rem;
+            }
+            .red-p {
+                color: #CF031F;
+            }
+            .yellow-p {
+                color: #F7E739;
+            }
+            .green-p {
+                color: #41750C;
+            }
+            .state {
+                font-size: 1.8rem;
+                color: #D9D9D9;
+            }
+        }
+        .choose {
+            border: 1px solid #FF0000;
+        }
+    }
+    
+    .list {
+        font-size: 1.8rem;
+        margin-bottom: 70px;
+        .right,
+        .left {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px;
+            height: 95px;
+            background: #D9D9D9;
+            position: absolute;
+            top: 0;
+        }
+        .right {
+            right: -311px;
+        }
+        .ractive {
+            right: 0px;
+            transition: all .3s ease;
+        }
+        .left {
+            left: -311px;
+        }
+        .lactive {
+            left: 0px;
+            transition: all .3s ease;
+        }
+        div[class|='op'] {
+            width: 80px;
+            text-align: center;
+            font-size: 1.6rem;
+        }
+        .op-edit a {
+            text-decoration: none;
+            font-size: 1.6rem;
+            color:#000000;
+        }
+    }
+    
+    .choose {
+        border: 1px solid #FF0000 !important;
+    }
+    
+    .task {
+        border: 1px solid #C6C6C6;
+        display: flex;
+        align-items: center;
+        width: 95%;
+        height: 97px;
+        padding: @mp;
+        margin: @mp auto;
+        position: relative;
+        overflow: hidden;
+        .red,
+        .yellow,
+        .green {
+            font-size: 1.8rem;
+            margin-right: @mp;
+        }
+        .red {
+            color: #CF031F;
+        }
+        .yellow {
+            color: #F7E739;
+        }
+        .green {
+            color: #41750C;
+        }
+        .content {
+            font-size: 1.8rem;
+            width:80%;
+        }
+    }
+
+</style>
